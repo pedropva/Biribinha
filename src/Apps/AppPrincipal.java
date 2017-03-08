@@ -1,34 +1,25 @@
 package Apps;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-
 import Pessoas.Funcionario;
 import Pessoas.Gerente;
 
+
 public class AppPrincipal extends JFrame implements ActionListener{
-	private static final long serialVersionUID = 1L;
-	private static JPanel painel;    
-	private static AppPrincipal principal = new AppPrincipal();       
+	private static JPanel painel; 
+	private int logada;
+	private static AppPrincipal principal = new AppPrincipal();    
 	private static StatusBar status = new StatusBar("Bem-vindo!Faça login pra começar!");
 	private static String[] opMenu = {"Login","appGerente","appFuncionario","Sair"};
 	private static String estado = "Login";
 	private Loja loja;
+
+
 	public static JPanel getPainel() {
 		return painel;
 	}
@@ -56,9 +47,6 @@ public class AppPrincipal extends JFrame implements ActionListener{
 	public void setLoja(Loja loja) {
 		this.loja = loja;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 	public static void setPrincipal(AppPrincipal principal) {
 		AppPrincipal.principal = principal;
 	}
@@ -70,45 +58,26 @@ public class AppPrincipal extends JFrame implements ActionListener{
 		AppPrincipal.status = status;
 	}
 
-	public static void main(String[] args) {	
-		int opc = -1;
-		String nome = "Biribinha";
-		Gerente gerente = new Gerente("Agripino",123456,654321);
-		Funcionario funcio = new Funcionario("Agripino",123456,"Padeiro",1234);
-		principal.loja = new Loja(nome,gerente);
-		principal.loja.Cadastrar(funcio);
-		principal.inicializarJanela(principal.loja);
-
-
-		/*
-		do{
-			menuLogon();
-			System.out.print("Escolha uma das opções: ");
-			opc = Ler.inteiro();
-
-			switch(opc){
-			case 1:
-				System.out.println("informe sua senha: "); int senha=Ler.inteiro();
-				if(senha == gerente.getSenha()){
-					appGerente.iniciarAppGerente(loja);
-				}else{
-					System.out.println("Senha incorreta!");
-				}
-			break;
-			case 2:
-				appFuncionario.iniciarAppFuncionario(loja);
-			break;
-			case 0:
-				System.err.println("\n\tEXPEDIENTE ENCERRADO!");
-			break;
-			default :
-				System.err.println("OPCAO INVALIDA!");
-			break;
-
-			}
-		}while(opc!=0);
-		 */
+	public int getLogada() {
+		return logada;
 	}
+	public void setLogada(int logada) {
+		this.logada = logada;
+	}
+	//MAIN AQUIIIIIIIIIIIIII
+	public static void main(String[] args) {
+		principal.setLoja((Loja)Arquivo.carregar("Loja.txt"));
+		if(principal.getLoja()==null){
+			Gerente gerente = new Gerente("Agripino",123456,654321);
+			Funcionario funcio = new Funcionario("Agripino",123456,"Padeiro",1234);
+			principal.setLoja(new Loja("Biribinha",gerente));
+			principal.getLoja().Cadastrar(funcio);
+		}else{
+			JOptionPane.showMessageDialog(null, "Save carregado com Sucesso!");
+		}
+		principal.inicializarJanela(principal.loja);
+	}
+
 	public void inicializarJanela(Loja loja){
 		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		principal.setTitle("Lojas "+loja.getNome()+".");
@@ -119,8 +88,24 @@ public class AppPrincipal extends JFrame implements ActionListener{
 
 		principal.add(painel);
 		principal.repaint();
-		principal.setVisible(true);                
+		principal.setVisible(true);    
 		principal.setSize(500,500);
+		//salvar
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			public void run() {
+				
+				if(Arquivo.salvar(principal.getLoja(),"Loja.txt")){
+					System.out.println("Salvo com sucesso!");
+				}else{
+					System.out.println("Falha ao Salvar!");
+				}
+				if(Arquivo.relatorio(principal.getLoja())){
+					System.out.println("Relatorio feito com sucesso!");
+				}else{
+					System.out.println("Falha ao salvar o relatorio!");
+				}
+			}
+		}, "Shutdown-thread"));
 	}
 
 
@@ -136,13 +121,13 @@ public class AppPrincipal extends JFrame implements ActionListener{
 
 			principal.add(painel);
 			principal.repaint();
-			principal.setVisible(true);                		
+			principal.setVisible(true);
 		}
 		else if(estado == "appGerente"){     
 			if(painel != null)principal.remove(painel);
 			painel = new AppGerente(principal);
 			status.setTexto("Aplicativo do Gerente");
-			
+
 			principal.add(painel);
 			principal.repaint();
 			principal.setVisible(true);            
@@ -161,9 +146,4 @@ public class AppPrincipal extends JFrame implements ActionListener{
 			System.exit(0);
 		}
 	}	
-	public static  void menuLogon(){
-		System.out.println("[1] - LOGAR COMO GERENTE");
-		System.out.println("[2] - LOGAR COMO FUNCIONARIO");
-		System.out.println("[0] - ENCERRAR EXPEDIENTE");
-	}
 }

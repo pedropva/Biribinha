@@ -15,11 +15,11 @@ public class Loja implements Serializable {
 	private String nome; //nome da loja
 	private Gerente gerente; //gerente da loja
 	private float renda; //renda da loja
-	private int keyMestra; // chave dada ao dono da loja
+
 	private HashMap<Integer, Funcionario> funcionario; //lista de funcionarios
 	private HashMap<Integer, Gerente> gerentes; //lista de gerentes
 	private ArrayList<Produtos> listaprodutos; //estoque de produtos da loja
-	
+
 	public Loja(){};
 	public Loja(String nome,Gerente gerente) {
 		this.nome = nome;
@@ -29,10 +29,19 @@ public class Loja implements Serializable {
 		gerentes = new HashMap<Integer , Gerente>();
 		gerentes.put(gerente.getRegistro(), gerente);
 		this.renda = 0f;
-		this.keyMestra = 28082016;
-		
 	}
+
 	//encapsulamento
+	public void setFuncionario(HashMap<Integer, Funcionario> funcionario) {
+		this.funcionario = funcionario;
+	}
+	public void setGerentes(HashMap<Integer, Gerente> gerentes) {
+		this.gerentes = gerentes;
+	}
+	public void setListaprodutos(ArrayList<Produtos> listaprodutos) {
+		this.listaprodutos = listaprodutos;
+	}
+
 	public String getNome() {
 		return nome;
 	}
@@ -53,202 +62,122 @@ public class Loja implements Serializable {
 		return renda;
 	}
 
-	public void setRenda(int renda) {
+	public void setRenda(float renda) {
 		this.renda = renda;
 	}
-	
+
 	public HashMap<Integer, Funcionario> getFuncionario() {
 		return funcionario;
 	}
-	
+
 	public HashMap<Integer, Gerente> getGerentes() {
 		return gerentes;
 	}
-	
+
 	public ArrayList<Produtos> getListaprodutos() {
 		return listaprodutos;
 	}
-	
-	
-	public int getKeyMestra() {
-		return keyMestra;
-	}
-	public void setKeyMestra(int keyMestra) {
-		this.keyMestra = keyMestra;
-	}
-	//metodos da classe usados pelo gerente
-	public void listar(ArrayList<Produtos> listaprodutos){
-		if(listaprodutos.size() > 0){
-			for(Produtos p: listaprodutos){
-				System.out.println("Produto: "+p.getNome());
-				System.out.println("Marca: "+p.getMarca());
-				System.out.println("Preco R$:"+p.getPreco());
-				System.out.println("unds em estoque: "+p.getUnidades());
-				if( p instanceof Alimentacao ){
-					Alimentacao tmp = (Alimentacao)p;
-					System.out.println("validade: "+tmp.getValidade());
-				}else if(p instanceof Higiene){
-					Higiene tmp = (Higiene)p;
-					System.out.println(tmp.getValidade());
-				}else if(p instanceof Eletronicos){
-					Eletronicos tmp = (Eletronicos)p;
-					System.out.println(tmp.getVoltagem());
-				}
-				System.out.println();
-			}
+
+	//Demite Funcionario
+	public int Demitir(int registro){
+		if(this.getFuncionario().remove(registro)==null){
+			return 0;
 		}else{
-			System.out.println("Estoque Vazio");
-		}
+			return 1;
+		}  
 	}
 
-	public void Demitir(HashMap<Integer, Funcionario> funcionario){
-		int registro;
-		System.out.print("Informe o registro do funcionario: "); 
-		registro = Ler.inteiro();
-		if(funcionario.remove(registro)==null){
-			System.out.println("Funcionario nao Existe");
-		}else{
-			System.out.println("Funcionario demitido!");
-		}	
-	}
-
+	//cadastra um funcionario
 	public void Cadastrar(Pessoa p){
 		if(p instanceof Funcionario){
 			Funcionario aux = (Funcionario)p;
-			if(this.funcionario.put(aux.getRegistro(), aux)==null){
-				System.out.println("Funcionario Adimitido! ");
-			}else{
-				System.out.println("Erro ao cadastrar");
-			}
+			this.getFuncionario().put(aux.getRegistro(), aux);
 		}
 		if(p instanceof Gerente){
 			Gerente aux = (Gerente)p;
-			if(this.gerentes.put(aux.getRegistro(), aux)==null){
-				System.out.println("Gerente Adimitido! ");
-			}else{
-				System.out.println("Erro ao cadastrar");
+			this.getGerentes().put(aux.getRegistro(), aux);
+		}
+
+	}
+	//funções de consulta
+	public ArrayList<Produtos> Consultar(String nome){
+		ArrayList<Produtos> a = new ArrayList<Produtos>();
+		for(int i=0;i<this.getListaprodutos().size();i++){
+			if(this.getListaprodutos().get(i).getNome().equals(nome)){
+				a.add(this.getListaprodutos().get(i));
 			}
 		}
-		
+		return a;
+	}
+	public ArrayList<Produtos> ConsultarMarca(String marca){
+		ArrayList<Produtos> a = new ArrayList<Produtos>();
+		for(int i=0;i<this.getListaprodutos().size();i++){
+			if(this.getListaprodutos().get(i).getMarca().equals(marca)){
+				a.add(this.getListaprodutos().get(i));
+			}
+		}
+		return a;
+	}
+	public ArrayList<Produtos> Consultar(String nome,String marca){
+		ArrayList<Produtos> a = new ArrayList<Produtos>();
+		for(int i=0;i<this.getListaprodutos().size();i++){
+			if(this.getListaprodutos().get(i).getNome().equals(nome) && this.getListaprodutos().get(i).getMarca().equals(marca)){
+				a.add(this.getListaprodutos().get(i));
+			}
+		}
+		return a;
 	}
 
-	public void Comprar(float renda,ArrayList<Produtos> listaprodutos){
-		int esc; 
-		System.out.println("Qual o tipo de produto que deseja adicionar:"); 
-		System.out.println("[1] - Alimentacao"); 
-		System.out.println("[2] - Higiene");
-		System.out.println("[1] - Eletronico");
-		esc = Ler.inteiro();
-			if(esc == 1){
-				Ler.linha();
-				System.out.print("Informe o nome do produto: "); String nome = Ler.linha();
-				System.out.print("Informe a marca do produto: "); String marca = Ler.linha();
-				System.out.print("Informe o preço: "); float preco = Ler.inteiro();
-				Ler.linha();
-				System.out.print("Informe a validade(_/_/_): "); String validade = Ler.linha();
-				System.out.print("Informe a qnts unidades: "); int und = Ler.inteiro();
-				Alimentacao novo = new Alimentacao(nome,marca,preco,validade,und);
-				if(listaprodutos.add(novo)){
-					this.renda -= preco*und;
-					System.out.println("Produto estocado");
-				}else{
-					System.out.println("Erro ao estocar");
-
-				}
-				
-			}else if( esc == 2){
-				Ler.linha();
-				System.out.print("Informe o nome do produto: "); String nome = Ler.linha();
-				System.out.print("Informe a marca do produto: "); String marca = Ler.linha();
-				System.out.print("Informe o preço: "); float preco = Ler.preco();
-				Ler.linha();
-				System.out.print("Informe a validade(_/_/_): "); String validade = Ler.linha();
-				System.out.print("Informe a qnts unidades: "); int und = Ler.inteiro();
-				Higiene novo =new Higiene(nome,marca,preco,validade,und);
-				if(listaprodutos.add(novo)){
-					System.out.println("Produto estocado");
-					this.renda -= preco*und;
-				}else{
-					System.out.println("Erro ao estocar");
-				}
-				
-			}else if( esc == 3){
-				Ler.linha();
-				System.out.print("Informe o nome do produto: "); String nome = Ler.linha();
-				System.out.print("Informe a marca do produto: "); String marca = Ler.linha();
-				System.out.print("Informe o preço: "); float preco = Ler.preco();
-				System.out.print("Informe a qunts unidades: "); int und = Ler.inteiro();
-				System.out.print("Informe a voltagem(220w ou 110w: "); int voltagem = Ler.inteiro();
-				Eletronicos novo = new Eletronicos(nome,marca,preco,voltagem,und);
-				if(listaprodutos.add(novo)){
-					System.out.println("Produto estocado");
-					this.renda -= preco*und;
-				}else{
-					System.out.println("Erro ao estocar");
-				}
+	//comprar
+	public boolean Comprar(Produtos p){
+		ArrayList<Produtos> p2 = Consultar(p.getNome(), p.getMarca());
+		if(p2.size()==0){
+			if(this.getListaprodutos().add(p)){
+				this.setRenda(this.getRenda()-p.getPreco()*p.getUnidades());
+				return true;
 			}else{
-				System.out.println("Escolha um tipo valido");
-			}
-			
-		}
-	//metodos da clsse usados pelos funcionarios
-	public void consultar(ArrayList<Produtos> listaprodutos){
-		if(listaprodutos.size() > 0){
-			Ler.linha();
-			System.out.println("Informe o nome do produto: "); 
-			String nome = Ler.linha();
-			for(Produtos p: listaprodutos){
-				if(p.getNome().equals(nome)){
-					System.out.println(p.getNome());
-					System.out.println(p.getMarca());
-					System.out.println(p.getPreco());
-					System.out.println(p.getUnidades());
-					if( p instanceof Alimentacao ){
-						Alimentacao tmp = (Alimentacao)p;
-						System.out.println(tmp.getValidade());
-					}else if(p instanceof Higiene){
-						Higiene tmp = (Higiene)p;
-						System.out.println(tmp.getValidade());
-					}else if(p instanceof Eletronicos){
-						Eletronicos tmp = (Eletronicos)p;
-						System.out.println(tmp.getVoltagem());
-					}
-				}
+				return false;
 			}
 		}else{
-			System.out.println("Estoque Vazio");
+			p2.get(0).setUnidades(p2.get(0).getUnidades()+p.getUnidades());
+			return true;
 		}
-	}
-	
-	public void vender(ArrayList<Produtos> listaprodutos){
-		
-		if(listaprodutos.size() > 0){
-			Ler.linha();
-			System.out.println("Informe o nome do produto: "); String nome = Ler.linha();
-			System.out.println("Informe a quantidade do produto: "); int qnt = Ler.inteiro();
-				for(int i=0;i<listaprodutos.size();i++){
-					if(listaprodutos.get(i).getNome().equals(nome)){
-						if(qnt <= listaprodutos.get(i).getUnidades()){
-							this.renda += (listaprodutos.get(i).getPreco() + (listaprodutos.get(i).getPreco()/10))*qnt;
-							if(qnt == listaprodutos.get(i).getUnidades()){
-								listaprodutos.get(i).setUnidades(0);
-								if(listaprodutos.get(i).getUnidades()==0){
-									listaprodutos.remove(i);
-								}
-								System.out.println("Venda realizada com sucesso!");
-							}else{
-								listaprodutos.get(i).setUnidades(listaprodutos.get(i).getUnidades()-qnt);
-								System.out.println("Venda realizada com sucesso!");
+	}	
+
+	public int vender(String nome, int qnt,int lucro){
+		int res = 0;
+		if(this.getListaprodutos().size() > 0){
+			for(int i=0;i<this.getListaprodutos().size();i++){
+				if(this.getListaprodutos().get(i).getNome().equals(nome)){
+					if(qnt <= this.getListaprodutos().get(i).getUnidades()){
+						this.setRenda(this.getRenda() + (this.getListaprodutos().get(i).getPreco() + (this.getListaprodutos().get(i).getPreco()/lucro))*qnt);
+						if(qnt == this.getListaprodutos().get(i).getUnidades()){
+							this.getListaprodutos().get(i).setUnidades(0);
+							if(this.getListaprodutos().get(i).getUnidades()==0){
+								this.getListaprodutos().remove(i);
 							}
+							res = 1; //venda realizada
 						}else{
-							System.out.println("Quantidade no estoque insuficiente!");
+							this.getListaprodutos().get(i).setUnidades(this.getListaprodutos().get(i).getUnidades()-qnt);
+							res =  1; //venda realizada
 						}
 					}else{
-						System.out.println("Produto nn disponivel em estoque!");
+						res =  -1; //quantidade em estoque insuficiente
 					}
+				}else{
+					res =  1; //produto nn disponivel
 				}
+			}
 		}else{
-			System.out.println("Estoque Vazio");
+			res = 0; //estoque vazio
 		}
+		return res;
+	}
+
+	public void alterarSenhaGerente(int registro,int newSenha){
+		this.getGerentes().get(registro).setSenha(newSenha);
+	}
+	public void alterarSenhaFunc(int registro,int newSenha){
+		this.getFuncionario().get(registro).setSenha(newSenha);
 	}
 }

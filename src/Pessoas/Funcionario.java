@@ -1,6 +1,8 @@
 package Pessoas;
 
-public class Funcionario extends Pessoa {
+import java.io.Serializable;
+
+public class Funcionario extends Pessoa implements Serializable{
 	private String funcao;
 	public Funcionario(){};
 	public Funcionario(String nome, int registro, String funcao,int senha) {
@@ -15,5 +17,5 @@ public class Funcionario extends Pessoa {
 	public void setFuncao(String funcao) {
 		this.funcao = funcao;
 	}
-	
+
 }

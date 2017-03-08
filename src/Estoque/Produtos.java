@@ -1,11 +1,13 @@
 package Estoque;
 
-public abstract class Produtos {
+import java.io.Serializable;
+
+public abstract class Produtos implements Serializable{
 	private String nome;
 	private String marca;
 	private float preco;
 	private int unidades;
-	
+
 	public Produtos(){};
 	public Produtos(String nome, String marca, float preco,int unidades) {
 		this.nome = nome;
@@ -45,5 +47,5 @@ public abstract class Produtos {
 	public void setUnidades(int unidades) {
 		this.unidades = unidades;
 	}
-	
+
 }

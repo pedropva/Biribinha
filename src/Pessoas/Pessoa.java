@@ -1,17 +1,19 @@
 package Pessoas;
 
-public class Pessoa {
+import java.io.Serializable;
+
+public abstract class Pessoa implements Serializable{
 	private String nome;
 	private int registro;
 	private int senha;
-	
-	
+
+
 	public Pessoa(){};
 	public Pessoa(String nome, int registro, int senha) {
 		this.nome = nome;
 		this.registro = registro;
 		this.senha = senha;
-		
+
 	}
 	public String getNome() {
 		return nome;

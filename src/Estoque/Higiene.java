@@ -1,8 +1,10 @@
 package Estoque;
 
-public class Higiene extends Produtos {
+import java.io.Serializable;
+
+public class Higiene extends Produtos implements Serializable{
 	private String validade;
-	
+
 	public Higiene(String nome, String marca, float preco,String validade,int unidades) {
 		super(nome, marca, preco,unidades);
 		this.validade = validade;
@@ -15,5 +17,5 @@ public class Higiene extends Produtos {
 	public void setValidade(String validade) {
 		this.validade = validade;
 	}
-	
+
 }
